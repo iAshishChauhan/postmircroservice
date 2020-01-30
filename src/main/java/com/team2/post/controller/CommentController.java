@@ -36,11 +36,12 @@ public class CommentController {
     public List<CommentDataDto> getCommentByPostId(@PathVariable("postId") long postId) {
         List<CommentDataDto> commentDataDtos = new ArrayList<CommentDataDto>();
         List<Comment> commentList = commentService.findByPostId(postId);
+
         for(Comment comment: commentList) {
             CommentDataDto commentDataDto = new CommentDataDto();
             BaseResponse<UserDetailDto> user = commentService.getUserDetail(comment.getUserId());
             UserDetailDto userDetailDto = new UserDetailDto();
-            userDetailDto = user.getContent();
+            userDetailDto = user.getData();
 
             commentDataDto.setImageUrl(userDetailDto.getImageUrl());
             commentDataDto.setUserName(userDetailDto.getUserName());
