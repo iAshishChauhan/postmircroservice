@@ -8,9 +8,11 @@ import org.springframework.http.HttpStatus;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class BaseResponse<T>{
+
+public class BaseResponse<T>
+{
     private String errorMessage;
     private boolean success;
-    private T data;
+    private T content;
     private HttpStatus status;
 }
