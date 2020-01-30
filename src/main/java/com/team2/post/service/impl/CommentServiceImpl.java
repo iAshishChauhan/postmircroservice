@@ -40,7 +40,6 @@ public class CommentServiceImpl implements CommentService {
         return commentRepository.findByUserId(userId);
     }
 
-
     @Override
     public List<Comment> findByParentCommentId(long parentCommentId) {
         return commentRepository.findByParentCommentId(parentCommentId);

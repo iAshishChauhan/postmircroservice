@@ -33,7 +33,7 @@ public class CommentController {
     }
 
     @GetMapping("/viewReplyComment/{parentCommentId}")
-    public List<CommentDataDto> replyComment(@PathVariable(value = "parentCommentId") long parentCommentId) {
+    public List<CommentDataDto> getReplyComment(@PathVariable(value = "parentCommentId") long parentCommentId) {
 
         List<CommentDataDto> commentDataDtos = new ArrayList<CommentDataDto>();
         List<Comment> commentList = commentService.findByParentCommentId(parentCommentId);
