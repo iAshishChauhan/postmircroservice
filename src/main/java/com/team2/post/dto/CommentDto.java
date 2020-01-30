@@ -1,15 +1,19 @@
 package com.team2.post.dto;
 
-import lombok.Getter;
-import lombok.Setter;
+import com.sun.tracing.dtrace.ArgsAttributes;
+import lombok.*;
 
-@Setter
+import java.util.Date;
+
 @Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class CommentDto {
-    String imageUrl;
-    String userName;
-    long commentId;
-    long parentCommentId;
-    String text;
-    String timeStamp;
+    private long commentId;
+    private long postId;
+    private long userId;
+    private String text;
+    private long parentCommentId;
+    private Date timeStamp;
 }
