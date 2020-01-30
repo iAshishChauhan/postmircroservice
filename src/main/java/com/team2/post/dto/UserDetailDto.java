@@ -15,6 +15,19 @@ import java.util.List;
 @NoArgsConstructor
 public class UserDetailDto
 {
+import lombok.*;
+
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter
+@Setter
+public class UserDetailDto {
+
     private Long userId;
     private String userName;
     private String imageUrl;
@@ -25,4 +38,7 @@ public class UserDetailDto
     private List<String> interests;
     private String profileType;
     private String displayType;
+
+    private HashSet<Long> friendIds;
+    private HashSet<Long> pendingFriendIds;
 }
