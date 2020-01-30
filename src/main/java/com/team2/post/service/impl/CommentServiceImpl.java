@@ -1,6 +1,9 @@
 package com.team2.post.service.impl;
 
+import com.team2.post.client.UserClient;
 import com.team2.post.collection.Comment;
+import com.team2.post.dto.response.BaseResponse;
+import com.team2.post.dto.UserDetailDto;
 import com.team2.post.repository.CommentRepository;
 import com.team2.post.service.CommentService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +17,9 @@ public class CommentServiceImpl implements CommentService {
     @Autowired
     CommentRepository commentRepository;
 
+    @Autowired
+    UserClient userClient;
+
     @Override
     public String saveComment(Comment comment) {
         commentRepository.insert(comment);
@@ -24,4 +30,14 @@ public class CommentServiceImpl implements CommentService {
     public List<Comment> findByPostId(long postId) {
         return commentRepository.findByPostId(postId);
     }
+
+    @Override
+    public List<Comment> findByUserId(long userId) {
+        return commentRepository.findByUserId(userId);
+    }
+
+    public BaseResponse<UserDetailDto> getUserDetail(long userId) {
+        return userClient.getUserDetailsById(userId);
+    }
+
 }

@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.ZonedDateTime;
+import java.util.Date;
 
 @Setter
 @Getter
@@ -18,5 +19,5 @@ public class CommentDataDto {
     private long commentId;
     private long parentCommentId;
     private String text;
-    private ZonedDateTime timeStamp;
+    private Date timeStamp;
 }

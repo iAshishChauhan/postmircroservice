@@ -1,4 +1,4 @@
-package com.team2.post.dto.Response;
+package com.team2.post.dto.response;
 
 import lombok.*;
 import org.springframework.http.HttpStatus;
@@ -14,4 +14,3 @@ public class BaseResponse<T>{
     private T content;
     private HttpStatus status;
 }
-
