@@ -56,8 +56,15 @@ public class CommentController {
     }
 
     @GetMapping(value = "/viewCommentByUser/{userId}")
-    public List<Comment> getCommentByUserId(@PathVariable("userId") long userId) {
-        return commentService.findByUserId(userId);
+    public List<CommentDto> getCommentByUserId(@PathVariable("userId") long userId) {
+        List<Comment> commentList = commentService.findByUserId(userId);
+        List<CommentDto> commentDtos = new ArrayList<>();
+        for(Comment comment : commentList) {
+            CommentDto commentDto = new CommentDto();
+            BeanUtils.copyProperties(comment , commentDto);
+            commentDtos.add(commentDto);
+        }
+        return commentDtos;
     }
 
 }

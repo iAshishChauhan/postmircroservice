@@ -1,7 +1,7 @@
 package com.team2.post.service.impl;
 
-import com.team2.post.client.UserClient;
 import com.team2.post.collection.Comment;
+import com.team2.post.controller.feignInterfaces.UserProxy;
 import com.team2.post.dto.response.BaseResponse;
 import com.team2.post.dto.UserDetailDto;
 import com.team2.post.repository.CommentRepository;
@@ -18,7 +18,7 @@ public class CommentServiceImpl implements CommentService {
     CommentRepository commentRepository;
 
     @Autowired
-    UserClient userClient;
+    UserProxy userProxy;
 
     @Override
     public String saveComment(Comment comment) {
@@ -37,7 +37,7 @@ public class CommentServiceImpl implements CommentService {
     }
 
     public BaseResponse<UserDetailDto> getUserDetail(long userId) {
-        return userClient.getUserDetailsById(userId);
+        return userProxy.getUserDetailsById(userId);
     }
 
 }
