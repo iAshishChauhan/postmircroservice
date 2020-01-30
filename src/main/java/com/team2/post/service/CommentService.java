@@ -10,5 +10,6 @@ public interface CommentService {
     String saveComment(Comment comment);
     List<Comment> findByPostId(long postId);
     List<Comment> findByUserId(long userId);
+    List<Comment> findByParentCommentId(long parentCommentId);
     BaseResponse<UserDetailDto> getUserDetail(long userId);
 }

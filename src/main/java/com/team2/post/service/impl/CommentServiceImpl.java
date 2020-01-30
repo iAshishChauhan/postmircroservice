@@ -20,6 +20,10 @@ public class CommentServiceImpl implements CommentService {
     @Autowired
     UserProxy userProxy;
 
+    public BaseResponse<UserDetailDto> getUserDetail(long userId) {
+        return userProxy.getUserDetailsById(userId);
+    }
+
     @Override
     public String saveComment(Comment comment) {
         commentRepository.insert(comment);
@@ -36,8 +40,9 @@ public class CommentServiceImpl implements CommentService {
         return commentRepository.findByUserId(userId);
     }
 
-    public BaseResponse<UserDetailDto> getUserDetail(long userId) {
-        return userProxy.getUserDetailsById(userId);
-    }
 
+    @Override
+    public List<Comment> findByParentCommentId(long parentCommentId) {
+        return commentRepository.findByParentCommentId(parentCommentId);
+    }
 }
