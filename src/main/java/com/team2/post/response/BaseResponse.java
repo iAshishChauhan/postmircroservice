@@ -8,7 +8,6 @@ import org.springframework.http.HttpStatus;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-
 public class BaseResponse<T>
 {
     private String errorMessage;
