@@ -1,4 +1,4 @@
-package com.team2.post.dto.response;
+package com.team2.post.response;
 
 import lombok.*;
 import org.springframework.http.HttpStatus;

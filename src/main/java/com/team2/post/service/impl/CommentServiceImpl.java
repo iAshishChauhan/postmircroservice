@@ -2,7 +2,7 @@ package com.team2.post.service.impl;
 
 import com.team2.post.collection.Comment;
 import com.team2.post.controller.feignInterfaces.UserProxy;
-import com.team2.post.dto.response.BaseResponse;
+import com.team2.post.response.BaseResponse;
 import com.team2.post.dto.UserDetailDto;
 import com.team2.post.repository.CommentRepository;
 import com.team2.post.service.CommentService;

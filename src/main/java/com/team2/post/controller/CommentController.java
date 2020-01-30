@@ -3,7 +3,7 @@ package com.team2.post.controller;
 import com.team2.post.collection.Comment;
 import com.team2.post.dto.CommentDataDto;
 import com.team2.post.dto.CommentDto;
-import com.team2.post.dto.response.BaseResponse;
+import com.team2.post.response.BaseResponse;
 import com.team2.post.dto.UserDetailDto;
 import com.team2.post.service.CommentService;
 import org.springframework.beans.BeanUtils;
