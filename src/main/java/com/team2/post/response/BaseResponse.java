@@ -1,14 +1,16 @@
 package com.team2.post.response;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
+import org.springframework.http.HttpStatus;
 
+@Builder
 @Getter
 @Setter
-@ToString
-public class BaseResponse<T> {
-    private Boolean success;
+@AllArgsConstructor
+@NoArgsConstructor
+public class BaseResponse<T>{
     private String errorMessage;
-    private T data;
+    private boolean success;
+    private T content;
+    private HttpStatus status;
 }
