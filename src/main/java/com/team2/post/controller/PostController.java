@@ -25,7 +25,6 @@ public class PostController {
     public List<Post> postByUserId(@PathVariable("userId") Long userId){
         return postService.showPostByUserId(userId);
     }
-
     @GetMapping("/getUserIdByPostId/{postId}")
     public Long userIdByPostId(@PathVariable("postId")Long postId){
         return postService.getUserIdByPostId(postId);
