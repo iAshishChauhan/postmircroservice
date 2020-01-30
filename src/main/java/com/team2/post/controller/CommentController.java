@@ -33,7 +33,7 @@ public class CommentController {
     }
 
     @GetMapping("/viewReplyComment/{parentCommentId}")
-    public List<CommentDataDto> getReplyComment(@PathVariable(value = "parentCommentId") long parentCommentId) {
+    public List<CommentDataDto> getReplyComment(@PathVariable(value = "parentCommentId") String parentCommentId) {
 
         List<CommentDataDto> commentDataDtos = new ArrayList<CommentDataDto>();
         List<Comment> commentList = commentService.findByParentCommentId(parentCommentId);
@@ -58,7 +58,7 @@ public class CommentController {
     }
 
     @GetMapping(value = "/viewCommentByPost/{postId}")
-    public List<CommentDataDto> getCommentByPostId(@PathVariable("postId") long postId) {
+    public List<CommentDataDto> getCommentByPostId(@PathVariable("postId") String postId) {
         List<CommentDataDto> commentDataDtos = new ArrayList<CommentDataDto>();
         List<Comment> commentList = commentService.findByPostId(postId);
 
@@ -82,7 +82,7 @@ public class CommentController {
     }
 
     @GetMapping(value = "/viewCommentByUser/{userId}")
-    public List<CommentDto> getCommentByUserId(@PathVariable("userId") long userId) {
+    public List<CommentDto> getCommentByUserId(@PathVariable("userId") String userId) {
         List<Comment> commentList = commentService.findByUserId(userId);
         List<CommentDto> commentDtos = new ArrayList<>();
         for(Comment comment : commentList) {

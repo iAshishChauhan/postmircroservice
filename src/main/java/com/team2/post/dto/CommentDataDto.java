@@ -15,9 +15,9 @@ import java.util.Date;
 public class CommentDataDto {
     private String imageUrl;
     private String userName;
-    private long postId;
-    private long commentId;
-    private long parentCommentId;
+    private String postId;
+    private String commentId;
+    private String parentCommentId;
     private String text;
     private Date timeStamp;
 }

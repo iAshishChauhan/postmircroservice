@@ -10,6 +10,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 public interface UserProxy
 {
     @GetMapping("user/getUserDetails/{userId}")
-    BaseResponse<UserDetailDto> getUserDetailsById(@PathVariable(value = "userId") Long userId);
+    BaseResponse<UserDetailDto> getUserDetailsById(@PathVariable(value = "userId") String userId);
 
 }
