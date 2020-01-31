@@ -10,10 +10,10 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CommentDto {
-    private long commentId;
-    private long postId;
-    private long userId;
+    private String commentId;
+    private String postId;
+    private String userId;
     private String text;
-    private long parentCommentId;
+    private String parentCommentId;
     private Date timeStamp;
 }

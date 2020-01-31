@@ -8,7 +8,8 @@ import java.util.List;
 
 public interface CommentService {
     String saveComment(Comment comment);
-    List<Comment> findByPostId(long postId);
-    List<Comment> findByUserId(long userId);
-    BaseResponse<UserDetailDto> getUserDetail(long userId);
+    List<Comment> findByPostId(String postId);
+    List<Comment> findByUserId(String userId);
+    List<Comment> findByParentCommentId(String parentCommentId);
+    BaseResponse<UserDetailDto> getUserDetail(String userId);
 }
