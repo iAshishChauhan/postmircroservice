@@ -38,7 +38,7 @@ public class ReactionController {
         {
             ReactionRequestDto reactionRequestDto = new ReactionRequestDto();
             BaseResponse<UserDetailDto> user = reactionService.getUserDetails(reaction.getUserId());
-            UserDetailDto userDetailDto = user.getContent();
+            UserDetailDto userDetailDto = user.getData();
             reactionRequestDto.setUserName(userDetailDto.getUserName());
             reactionRequestDto.setImageUrl(userDetailDto.getImageUrl());
             reactionRequestDto.setActivity(reaction.getActivity());

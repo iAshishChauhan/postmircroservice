@@ -39,7 +39,7 @@ public class ReactionServiceImpl implements ReactionService {
         return reactionRepository.findAllByUserId(userId);
     }
 
-    public BaseResponse<UserDetailDto> getUserDetails(Long userId)
+    public BaseResponse<UserDetailDto> getUserDetails(String userId)
     {
       return userProxy.getUserDetailsById(userId);
     }
