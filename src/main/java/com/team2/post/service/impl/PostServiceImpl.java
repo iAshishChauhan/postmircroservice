@@ -4,11 +4,11 @@ import com.team2.post.collection.Post;
 import com.team2.post.dto.PostDTO;
 import com.team2.post.repository.PostRepository;
 import com.team2.post.service.PostService;
-import javafx.geometry.Pos;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
@@ -25,13 +25,13 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public List<Post> showPostByUserId(Long userId) {
+    public List<Post> showPostByUserId(String userId) {
         List<Post> postListByUserId = postRepository.findByUserId(userId);
         return postListByUserId;
     }
 
     @Override
-    public Long getUserIdByPostId(Long postId) {
+    public String getUserIdByPostId(String postId) {
         Post post = postRepository.findByPostId(postId);
         return post.getUserId();
     }
@@ -41,5 +41,17 @@ public class PostServiceImpl implements PostService {
         List<Post> PostList = postRepository.findAll();
         PostList.sort(Comparator.comparing(Post::getTimestamp).reversed());
         return PostList;
+    }
+
+    @Override
+    public Post getPostByPostId(String postId)
+    {
+        return postRepository.findByPostId(postId);
+    }
+
+    @Override
+    public List<Post> findPostByUserId(List<String> userId)
+    {
+        return postRepository.findAllByUserIdIn(userId);
     }
 }

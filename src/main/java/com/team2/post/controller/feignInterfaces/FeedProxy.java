@@ -1,15 +1,14 @@
 package com.team2.post.controller.feignInterfaces;
 
 
-import com.team2.post.dto.UserDetailDto;
-import com.team2.post.response.BaseResponse;
+import com.team2.post.dto.PostActivityDTO;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 
-@FeignClient(name="feed",url="http://10.177.68.178:8084")
+@FeignClient(name="feed",url="http://10.177.69.66:8084")
 public interface FeedProxy {
 
-    @GetMapping("/getUserDetails/{userId}")
-    BaseResponse<UserDetailDto> getUserDetailsById(@PathVariable(value = "userId") Long userId);
+    @GetMapping("feed/addPostAfterActivity")
+    String addPostAfterActivity(@RequestBody PostActivityDTO postActivityDTO);
 }
