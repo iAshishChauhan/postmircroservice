@@ -6,7 +6,7 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
-@FeignClient(name="user",url="http://10.177.68.178:8082")
+@FeignClient(name="user",url="http://172.16.20.180:8082")
 public interface UserProxy
 {
     @GetMapping("user/getUserDetails/{userId}")
