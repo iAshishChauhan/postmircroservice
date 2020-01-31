@@ -2,6 +2,8 @@ package com.team2.post.service;
 
 import com.team2.post.collection.Post;
 import com.team2.post.dto.PostDTO;
+import com.team2.post.dto.UserDetailDto;
+import com.team2.post.response.BaseResponse;
 
 import java.util.List;
 
@@ -12,5 +14,6 @@ public interface PostService {
     List<Post> sortedList();
     Post getPostByPostId(String postId);
     List<Post> findPostByUserId(List<String> userId);
+    BaseResponse<UserDetailDto> getUserDetails(String userId);
 
 }
