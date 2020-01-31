@@ -1,14 +1,9 @@
 package com.team2.post.service.impl;
-
 import com.team2.post.collection.Post;
-import com.team2.post.dto.PostDTO;
 import com.team2.post.repository.PostRepository;
 import com.team2.post.service.PostService;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
@@ -18,9 +13,8 @@ public class PostServiceImpl implements PostService {
     PostRepository postRepository;
 
     @Override
-    public Post addPost(PostDTO postDTO) {
-        Post post = new Post();
-        BeanUtils.copyProperties(postDTO, post);
+    public Post addPost(Post post)
+    {
         return postRepository.insert(post);
     }
 
