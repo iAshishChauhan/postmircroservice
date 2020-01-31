@@ -32,7 +32,7 @@ public class CommentController {
         return new BaseResponse<String>("null", true, response, HttpStatus.CREATED);
     }
 
-    @GetMapping("/viewReplyComment/{parentCommentId}")
+    /*@GetMapping("/viewReplyComment/{parentCommentId}")
     public List<CommentDataDto> getReplyComment(@PathVariable(value = "parentCommentId") String parentCommentId) {
 
         List<CommentDataDto> commentDataDtos = new ArrayList<CommentDataDto>();
@@ -55,7 +55,7 @@ public class CommentController {
             commentDataDtos.add(commentDataDto);
         }
         return commentDataDtos;
-    }
+    }*/
 
     @GetMapping(value = "/viewCommentByPost/{postId}")
     public List<CommentDataDto> getCommentByPostId(@PathVariable("postId") String postId) {
