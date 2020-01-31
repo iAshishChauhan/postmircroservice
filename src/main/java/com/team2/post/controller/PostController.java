@@ -13,6 +13,7 @@ import org.assertj.core.util.Lists;
 import org.assertj.core.util.Sets;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import java.util.*;
 
@@ -65,62 +66,68 @@ public class PostController {
     }
 
     @GetMapping("/user/timeline/{userId}")
-    public List<PostTimelineDto> getUsersAllPost(@PathVariable("userId") String userId)
+    public BaseResponse<List<PostTimelineDto>> getUsersAllPost(@PathVariable("userId") String userId)
     {
-        Set<PostDTO> postDTOS = new HashSet<>();
-        List<PostTimelineDto> postTimelineDtos = new ArrayList<>();
-        List<Post> posts = postService.showPostByUserId(userId);
-        List<Comment> comments = commentService.findByUserId(userId);
-        List<Reaction> reactions = reactionService.getReactionByUserId(userId);
-        for (Post post : posts)
-        {
-            PostDTO postDTO = new PostDTO();
-            BeanUtils.copyProperties(post,postDTO);
-            BaseResponse<UserDetailDto> user = postService.getUserDetails(post.getUserId());
-            UserDetailDto userDetailDto = user.getData();
-            PostTimelineDto postTimelineDto = new PostTimelineDto();
-            postTimelineDto.setPostId(post.getPostId());
-            postTimelineDto.setUserName(userDetailDto.getUserName());
-            postTimelineDto.setImageUrl(userDetailDto.getImageUrl());
-            postTimelineDto.setMessage("Posted");
-            postTimelineDto.setPostDTO(postDTO);
-            postTimelineDto.setTimeStamp(postDTO.getTimestamp());
-            postTimelineDtos.add(postTimelineDto);
-        }
-        for(Comment comment : comments)
-        {
-            PostDTO postDTO = new PostDTO();
-            BeanUtils.copyProperties(postService.getPostByPostId(comment.getPostId()),postDTO);
-            BaseResponse<UserDetailDto> user = postService.getUserDetails(comment.getUserId());
-            UserDetailDto userDetailDto = user.getData();
-            PostTimelineDto postTimelineDto = new PostTimelineDto();
-            postTimelineDto.setPostId(postDTO.getPostId());
-            postTimelineDto.setUserName(userDetailDto.getUserName());
-            postTimelineDto.setImageUrl(userDetailDto.getImageUrl());
-            postTimelineDto.setMessage("Commented");
-            postTimelineDto.setPostDTO(postDTO);
-            postTimelineDto.setTimeStamp(comment.getTimeStamp());
-            postTimelineDtos.add(postTimelineDto);
+        try {
 
-        }
-        for(Reaction reaction : reactions)
+            Set<PostDTO> postDTOS = new HashSet<>();
+            List<PostTimelineDto> postTimelineDtos = new ArrayList<>();
+            List<Post> posts = postService.showPostByUserId(userId);
+            List<Comment> comments = commentService.findByUserId(userId);
+            List<Reaction> reactions = reactionService.getReactionByUserId(userId);
+            for (Post post : posts) {
+                PostDTO postDTO = new PostDTO();
+                BeanUtils.copyProperties(post, postDTO);
+                BaseResponse<UserDetailDto> user = postService.getUserDetails(post.getUserId());
+                UserDetailDto userDetailDto = user.getData();
+                PostTimelineDto postTimelineDto = new PostTimelineDto();
+                postTimelineDto.setPostId(post.getPostId());
+                postTimelineDto.setUserName(userDetailDto.getUserName());
+                postTimelineDto.setImageUrl(userDetailDto.getImageUrl());
+                postTimelineDto.setMessage("Posted");
+                postTimelineDto.setPostDTO(postDTO);
+                postTimelineDto.setTimeStamp(postDTO.getTimestamp());
+                postTimelineDtos.add(postTimelineDto);
+            }
+            for (Comment comment : comments) {
+                PostDTO postDTO = new PostDTO();
+                BeanUtils.copyProperties(postService.getPostByPostId(comment.getPostId()), postDTO);
+                BaseResponse<UserDetailDto> user = postService.getUserDetails(comment.getUserId());
+                UserDetailDto userDetailDto = user.getData();
+                PostTimelineDto postTimelineDto = new PostTimelineDto();
+                postTimelineDto.setPostId(postDTO.getPostId());
+                postTimelineDto.setUserName(userDetailDto.getUserName());
+                postTimelineDto.setImageUrl(userDetailDto.getImageUrl());
+                postTimelineDto.setMessage("Commented");
+                postTimelineDto.setPostDTO(postDTO);
+                postTimelineDto.setTimeStamp(comment.getTimeStamp());
+                postTimelineDtos.add(postTimelineDto);
+
+            }
+            for (Reaction reaction : reactions) {
+                PostDTO postDTO = new PostDTO();
+                BeanUtils.copyProperties(postService.getPostByPostId(reaction.getPostId()), postDTO);
+                BaseResponse<UserDetailDto> user = postService.getUserDetails(reaction.getUserId());
+                UserDetailDto userDetailDto = user.getData();
+                PostTimelineDto postTimelineDto = new PostTimelineDto();
+                postTimelineDto.setPostId(postDTO.getPostId());
+                postTimelineDto.setUserName(userDetailDto.getUserName());
+                postTimelineDto.setImageUrl(userDetailDto.getImageUrl());
+                postTimelineDto.setMessage(reaction.getActivity());
+                postTimelineDto.setPostDTO(postDTO);
+                postTimelineDto.setTimeStamp(reaction.getTimeStamp());
+                postTimelineDtos.add(postTimelineDto);
+            }
+            List<PostTimelineDto> postWithoutDuplicates = Lists.newArrayList(Sets.newHashSet(postTimelineDtos));
+            postWithoutDuplicates.sort(Comparator.comparing(PostTimelineDto::getTimeStamp).reversed());
+
+            return new BaseResponse<>("null",true,postWithoutDuplicates,HttpStatus.CREATED);
+        }catch(Exception ex)
         {
-            PostDTO postDTO = new PostDTO();
-            BeanUtils.copyProperties(postService.getPostByPostId(reaction.getPostId()),postDTO);
-            BaseResponse<UserDetailDto> user = postService.getUserDetails(reaction.getUserId());
-            UserDetailDto userDetailDto = user.getData();
-            PostTimelineDto postTimelineDto = new PostTimelineDto();
-            postTimelineDto.setPostId(postDTO.getPostId());
-            postTimelineDto.setUserName(userDetailDto.getUserName());
-            postTimelineDto.setImageUrl(userDetailDto.getImageUrl());
-            postTimelineDto.setMessage(reaction.getActivity());
-            postTimelineDto.setPostDTO(postDTO);
-            postTimelineDto.setTimeStamp(reaction.getTimeStamp());
-            postTimelineDtos.add(postTimelineDto);
+            System.out.println(ex);
+            ex.printStackTrace();
         }
-        List<PostTimelineDto> postWithoutDuplicates = Lists.newArrayList(Sets.newHashSet(postTimelineDtos));
-        postWithoutDuplicates.sort(Comparator.comparing(PostTimelineDto::getTimeStamp).reversed());
-        return postWithoutDuplicates;
+        return null;
     }
 
     @PostMapping("/getPostsByUserIds")

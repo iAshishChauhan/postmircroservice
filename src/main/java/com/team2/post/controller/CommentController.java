@@ -41,6 +41,7 @@ public class CommentController {
         postActivityDTO.setPostDTO(postDTO);
         postActivityDTO.setUserFriendId(comment.getUserId());
         postActivityDTO.setMessage("Commented");
+        commentService.sendUserActivity(postActivityDTO);
 
         return new BaseResponse<String>("null", true, response, HttpStatus.CREATED);
     }
@@ -71,7 +72,7 @@ public class CommentController {
     }*/
 
     @GetMapping(value = "/viewCommentByPost/{postId}")
-    public List<CommentDataDto> getCommentByPostId(@PathVariable("postId") String postId) {
+    public BaseResponse<List<CommentDataDto>> getCommentByPostId(@PathVariable("postId") String postId) {
         List<CommentDataDto> commentDataDtos = new ArrayList<CommentDataDto>();
         List<Comment> commentList = commentService.findByPostId(postId);
 
@@ -91,7 +92,7 @@ public class CommentController {
 
             commentDataDtos.add(commentDataDto);
         }
-        return commentDataDtos;
+        return new BaseResponse<>("null",true,commentDataDtos,HttpStatus.CREATED);
     }
 
     @GetMapping(value = "/viewCommentByUser/{userId}")

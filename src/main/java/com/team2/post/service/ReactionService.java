@@ -18,4 +18,6 @@ public interface ReactionService {
     BaseResponse<UserDetailDto> getUserDetails(String userId);
 
     void sendUserActivity(PostActivityDTO postActivityDTO);
+
+
 }
