@@ -1,7 +1,10 @@
 package com.team2.post.service.impl;
 
 import com.team2.post.collection.Comment;
+import com.team2.post.controller.feignInterfaces.FeedProxy;
 import com.team2.post.controller.feignInterfaces.UserProxy;
+import com.team2.post.dto.CommentDataDto;
+import com.team2.post.dto.PostActivityDTO;
 import com.team2.post.response.BaseResponse;
 import com.team2.post.dto.UserDetailDto;
 import com.team2.post.repository.CommentRepository;
@@ -16,6 +19,9 @@ public class CommentServiceImpl implements CommentService {
 
     @Autowired
     CommentRepository commentRepository;
+
+    @Autowired
+    FeedProxy feedProxy;
 
     @Autowired
     UserProxy userProxy;
@@ -43,5 +49,10 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public List<Comment> findByParentCommentId(String parentCommentId) {
         return commentRepository.findByParentCommentId(parentCommentId);
+    }
+
+    @Override
+    public void sendUserActivity(PostActivityDTO postActivityDTO) {
+        feedProxy.addPostAfterActivity(postActivityDTO);
     }
 }
