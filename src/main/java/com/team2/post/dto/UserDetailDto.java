@@ -13,7 +13,7 @@ import java.util.List;
 @Setter
 public class UserDetailDto {
 
-    private Long userId;
+    private String userId;
     private String userName;
     private String imageUrl;
     private String gender;
