@@ -1,11 +1,11 @@
 package com.team2.post.controller;
 
 import com.team2.post.collection.Comment;
-import com.team2.post.dto.CommentDataDto;
-import com.team2.post.dto.CommentDto;
+import com.team2.post.collection.Post;
+import com.team2.post.dto.*;
 import com.team2.post.response.BaseResponse;
-import com.team2.post.dto.UserDetailDto;
 import com.team2.post.service.CommentService;
+import com.team2.post.service.PostService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+@CrossOrigin(value = "*")
 @RestController
 @RequestMapping("/comment")
 public class CommentController {
@@ -22,13 +23,25 @@ public class CommentController {
     @Autowired
     CommentService commentService;
 
+    @Autowired
+    PostService postService;
+
     @PostMapping("/addComment")
     public BaseResponse<String> addComment(@RequestBody CommentDto commentDto){
-        Date d = new Date();
-        commentDto.setTimeStamp(d);
+        Date now = new Date();
+        Date timeStamp = new Date(now.getTime());
+        commentDto.setTimeStamp(timeStamp);
         Comment comment = new Comment();
         BeanUtils.copyProperties(commentDto,comment);
         String response = commentService.saveComment(comment);
+        PostActivityDTO postActivityDTO = new PostActivityDTO();
+        Post post = postService.getPostByPostId(comment.getPostId());
+        PostDTO postDTO = new PostDTO();
+        BeanUtils.copyProperties(post,postDTO);
+        postActivityDTO.setPostDTO(postDTO);
+        postActivityDTO.setUserFriendId(comment.getUserId());
+        postActivityDTO.setMessage("Commented");
+
         return new BaseResponse<String>("null", true, response, HttpStatus.CREATED);
     }
 
