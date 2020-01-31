@@ -12,6 +12,6 @@ public class BaseResponse<T>
 {
     private String errorMessage;
     private boolean success;
-    private T content;
+    private T data;
     private HttpStatus status;
 }

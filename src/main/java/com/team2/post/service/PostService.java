@@ -6,9 +6,11 @@ import com.team2.post.dto.PostDTO;
 import java.util.List;
 
 public interface PostService {
-    Post addPost(PostDTO postDTO);
-    List<Post> showPostByUserId(Long userId);
-    Long getUserIdByPostId(Long postId);
+    Post addPost(Post post);
+    List<Post> showPostByUserId(String userId);
+    String getUserIdByPostId(String postId);
     List<Post> sortedList();
+    Post getPostByPostId(String postId);
+    List<Post> findPostByUserId(List<String> userId);
 
 }

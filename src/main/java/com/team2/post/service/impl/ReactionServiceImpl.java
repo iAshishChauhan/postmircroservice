@@ -1,7 +1,9 @@
 package com.team2.post.service.impl;
 
 import com.team2.post.collection.Reaction;
+import com.team2.post.controller.feignInterfaces.FeedProxy;
 import com.team2.post.controller.feignInterfaces.UserProxy;
+import com.team2.post.dto.PostActivityDTO;
 import com.team2.post.dto.UserDetailDto;
 import com.team2.post.repository.ReactionRepository;
 import com.team2.post.response.BaseResponse;
@@ -21,6 +23,9 @@ public class ReactionServiceImpl implements ReactionService {
     @Autowired
     UserProxy userProxy;
 
+    @Autowired
+    FeedProxy feedProxy;
+
     @Override
     public void addPostActivity(Reaction reaction)
     {
@@ -28,19 +33,26 @@ public class ReactionServiceImpl implements ReactionService {
     }
 
     @Override
-    public List<Reaction> readReactionByPostId(Long postId)
+    public List<Reaction> readReactionByPostId(String postId)
     {
         return reactionRepository.findAllByPostId(postId);
     }
 
     @Override
-    public List<Reaction> getReactionByUserId(Long userId)
+    public List<Reaction> getReactionByUserId(String userId)
     {
         return reactionRepository.findAllByUserId(userId);
     }
 
-    public BaseResponse<UserDetailDto> getUserDetails(Long userId)
+    @Override
+    public BaseResponse<UserDetailDto> getUserDetails(String userId)
     {
       return userProxy.getUserDetailsById(userId);
+    }
+
+    @Override
+    public void sendUserActivity(PostActivityDTO postActivityDTO)
+    {
+         feedProxy.addPostAfterActivity(postActivityDTO);
     }
 }

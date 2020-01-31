@@ -7,9 +7,9 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface ReactionRepository extends MongoRepository<Reaction,Long>
+public interface ReactionRepository extends MongoRepository<Reaction,String>
 {
-    List<Reaction> findAllByPostId(Long postId);
+    List<Reaction> findAllByPostId(String postId);
 
-    List<Reaction> findAllByUserId(Long userId);
+    List<Reaction> findAllByUserId(String userId);
 }

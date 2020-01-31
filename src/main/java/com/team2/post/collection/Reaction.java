@@ -15,10 +15,9 @@ import java.util.Date;
 @Document(value = "reactions")
 public class Reaction
 {
-    @Id
-    private long reactionId;
-    private long userId;
-    private long postId;
+    private String reactionId;
+    private String userId;
+    private String postId;
     private String activity;
     private Date timeStamp;
 }
