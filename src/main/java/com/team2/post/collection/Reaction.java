@@ -15,6 +15,7 @@ import java.util.Date;
 @Document(value = "reactions")
 public class Reaction
 {
+    @Id
     private String reactionId;
     private String userId;
     private String postId;
