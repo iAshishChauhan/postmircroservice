@@ -39,7 +39,7 @@ public class PostController {
             postDTO.setTimestamp(postService.getTimeStamp());
             BeanUtils.copyProperties(postDTO, post);
             postService.addPost(post);
-            postNotification(postDTO);
+            //postNotification(postDTO);
             return post.getPostId();
         }
         catch (Exception ex)
@@ -154,8 +154,7 @@ public class PostController {
         notificationDto.setPostId(postDTO.getPostId());
         notificationDto.setUserIdOfPost(postDTO.getUserId());
         BaseResponse<UserDetailDto> user = postService.getUserDetails(postDTO.getUserId());
-        UserDetailDto userDetailDto = new UserDetailDto();
-        userDetailDto = user.getData();
+        UserDetailDto userDetailDto = user.getData();
         HashSet<String> userFriend = userDetailDto.getFriendIds();
         notificationDto.setListOfFriends(userFriend);
         Producer producer = new Producer();

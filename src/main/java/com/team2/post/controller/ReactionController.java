@@ -35,7 +35,7 @@ public class ReactionController {
             BeanUtils.copyProperties(reactionDto, reaction);
             reactionService.addPostActivity(reaction);
             sendPostActivities(reactionDto);
-            reactionNotifications(reactionDto);
+            //reactionNotifications(reactionDto);
 
 
             return new BaseResponse<>("null", true, "Reaction Added", HttpStatus.CREATED);

@@ -35,7 +35,7 @@ public class CommentController {
             Comment comment = new Comment();
             BeanUtils.copyProperties(commentDto, comment);
             String response = commentService.saveComment(comment);
-            commentNotifications(commentDto);
+            //commentNotifications(commentDto);
             sendPostActivities(commentDto);
 
             return new BaseResponse<>("null", true, response, HttpStatus.CREATED);
