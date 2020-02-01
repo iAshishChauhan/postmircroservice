@@ -8,6 +8,7 @@ import com.team2.post.service.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -58,5 +59,12 @@ public class PostServiceImpl implements PostService {
     @Override
     public BaseResponse<UserDetailDto> getUserDetails(String userId) {
         return userProxy.getUserDetailsById(userId);
+    }
+
+    @Override
+    public Date getTimeStamp() {
+        Date now = new Date();
+        Date timeStamp = new Date(now.getTime());
+        return timeStamp;
     }
 }

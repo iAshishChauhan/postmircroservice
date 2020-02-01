@@ -20,4 +20,5 @@ public class CommentDataDto {
     private String parentCommentId;
     private String text;
     private Date timeStamp;
+    private CommentDataDto childComment;
 }
