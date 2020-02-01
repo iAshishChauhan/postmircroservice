@@ -52,7 +52,7 @@ public class CommentController {
         try {
             List<CommentDataDto> commentDataDtos = new ArrayList<CommentDataDto>();
             List<Comment> commentList = commentService.findByPostId(postId);
-            commentList.sort(Comparator.comparing(Comment::getTimeStamp).reversed());
+            commentList.sort(Comparator.comparing(Comment::getTimeStamp));
 
             for (Comment comment : commentList) {
                 CommentDataDto commentDataDto = new CommentDataDto();
@@ -72,7 +72,9 @@ public class CommentController {
                 } else {
                     for (CommentDataDto existingComment : commentDataDtos) {
                         if (existingComment.getCommentId().equals(comment.getParentCommentId())) {
-                            existingComment.setChildComment(commentDataDto);
+                            List<CommentDataDto> appendChildComment = existingComment.getChildComment();
+                            appendChildComment.add(commentDataDto);
+                            existingComment.setChildComment(appendChildComment);
                         }
                     }
                 }
