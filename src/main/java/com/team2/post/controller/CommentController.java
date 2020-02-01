@@ -6,14 +6,13 @@ import com.team2.post.dto.*;
 import com.team2.post.response.BaseResponse;
 import com.team2.post.service.CommentService;
 import com.team2.post.service.PostService;
+import com.team2.post.service.impl.Producer;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @CrossOrigin(origins = "*", allowedHeaders = "*")
 @RestController
@@ -26,83 +25,126 @@ public class CommentController {
     @Autowired
     PostService postService;
 
+
+
     @PostMapping("/addComment")
     public BaseResponse<String> addComment(@RequestBody CommentDto commentDto){
-        Date now = new Date();
-        Date timeStamp = new Date(now.getTime());
-        commentDto.setTimeStamp(timeStamp);
-        Comment comment = new Comment();
-        BeanUtils.copyProperties(commentDto,comment);
-        String response = commentService.saveComment(comment);
-        PostActivityDTO postActivityDTO = new PostActivityDTO();
-        Post post = postService.getPostByPostId(comment.getPostId());
-        PostDTO postDTO = new PostDTO();
-        BeanUtils.copyProperties(post,postDTO);
-        postActivityDTO.setPostDTO(postDTO);
-        postActivityDTO.setUserFriendId(comment.getUserId());
-        postActivityDTO.setMessage("Commented");
 
-        return new BaseResponse<String>("null", true, response, HttpStatus.CREATED);
+        try {
+            commentDto.setTimeStamp(commentService.getTimeStamp());
+            Comment comment = new Comment();
+            BeanUtils.copyProperties(commentDto, comment);
+            String response = commentService.saveComment(comment);
+            //commentNotifications(commentDto);
+            sendPostActivities(commentDto);
+
+            return new BaseResponse<>("null", true, response, HttpStatus.CREATED);
+        }catch (Exception ex)
+        {
+            System.out.println(ex);
+        }
+        return null;
     }
 
-    /*@GetMapping("/viewReplyComment/{parentCommentId}")
-    public List<CommentDataDto> getReplyComment(@PathVariable(value = "parentCommentId") String parentCommentId) {
-
-        List<CommentDataDto> commentDataDtos = new ArrayList<CommentDataDto>();
-        List<Comment> commentList = commentService.findByParentCommentId(parentCommentId);
-
-        for(Comment comment: commentList) {
-            CommentDataDto commentDataDto = new CommentDataDto();
-            BaseResponse<UserDetailDto> user = commentService.getUserDetail(comment.getUserId());
-            UserDetailDto userDetailDto = new UserDetailDto();
-            userDetailDto = user.getData();
-
-            commentDataDto.setImageUrl(userDetailDto.getImageUrl());
-            commentDataDto.setUserName(userDetailDto.getUserName());
-            commentDataDto.setTimeStamp(comment.getTimeStamp());
-            commentDataDto.setCommentId(comment.getCommentId());
-            commentDataDto.setParentCommentId(comment.getParentCommentId());
-            commentDataDto.setText(comment.getText());
-            commentDataDto.setPostId(comment.getPostId());
-
-            commentDataDtos.add(commentDataDto);
-        }
-        return commentDataDtos;
-    }*/
-
     @GetMapping(value = "/viewCommentByPost/{postId}")
-    public List<CommentDataDto> getCommentByPostId(@PathVariable("postId") String postId) {
-        List<CommentDataDto> commentDataDtos = new ArrayList<CommentDataDto>();
-        List<Comment> commentList = commentService.findByPostId(postId);
+    public BaseResponse<List<CommentDataDto>> getCommentByPostId(@PathVariable("postId") String postId) {
 
-        for(Comment comment: commentList) {
-            CommentDataDto commentDataDto = new CommentDataDto();
-            BaseResponse<UserDetailDto> user = commentService.getUserDetail(comment.getUserId());
-            UserDetailDto userDetailDto = new UserDetailDto();
-            userDetailDto = user.getData();
+        try {
+            List<CommentDataDto> commentDataDtos = new ArrayList<CommentDataDto>();
+            List<Comment> commentList = commentService.findByPostId(postId);
+            commentList.sort(Comparator.comparing(Comment::getTimeStamp));
 
-            commentDataDto.setImageUrl(userDetailDto.getImageUrl());
-            commentDataDto.setUserName(userDetailDto.getUserName());
-            commentDataDto.setTimeStamp(comment.getTimeStamp());
-            commentDataDto.setCommentId(comment.getCommentId());
-            commentDataDto.setParentCommentId(comment.getParentCommentId());
-            commentDataDto.setText(comment.getText());
-            commentDataDto.setPostId(comment.getPostId());
+            for (Comment comment : commentList) {
+                CommentDataDto commentDataDto = new CommentDataDto();
+                BaseResponse<UserDetailDto> user = commentService.getUserDetail(comment.getUserId());
+                UserDetailDto userDetailDto = user.getData();
 
-            commentDataDtos.add(commentDataDto);
+                commentDataDto.setPostId(comment.getPostId());
+                commentDataDto.setImageUrl(userDetailDto.getImageUrl());
+                commentDataDto.setUserName(userDetailDto.getUserName());
+                commentDataDto.setTimeStamp(comment.getTimeStamp());
+                commentDataDto.setCommentId(comment.getCommentId());
+                commentDataDto.setText(comment.getText());
+
+                if (comment.getParentCommentId() == null) {
+                    commentDataDto.setParentCommentId(comment.getParentCommentId());
+                    commentDataDtos.add(commentDataDto);
+                } else {
+                    for (CommentDataDto existingComment : commentDataDtos) {
+                        if (existingComment.getCommentId().equals(comment.getParentCommentId())) {
+                            List<CommentDataDto> appendChildComment = existingComment.getChildComment();
+                            appendChildComment.add(commentDataDto);
+                            existingComment.setChildComment(appendChildComment);
+                        }
+                    }
+                }
+            }
+            return new BaseResponse<>("null", true, commentDataDtos, HttpStatus.CREATED);
+        }catch (Exception ex)
+        {
+            System.out.println(ex);
         }
-        return commentDataDtos;
+        return null;
     }
 
     @GetMapping(value = "/viewCommentByUser/{userId}")
     public List<CommentDto> getCommentByUserId(@PathVariable("userId") String userId) {
-        List<Comment> commentList = commentService.findByUserId(userId);
-        List<CommentDto> commentDtos = new ArrayList<>();
-        for(Comment comment : commentList) {
-            CommentDto commentDto = new CommentDto();
-            BeanUtils.copyProperties(comment , commentDto);
-            commentDtos.add(commentDto);
+        try {
+            List<Comment> commentList = commentService.findByUserId(userId);
+            List<CommentDto> commentDtos = new ArrayList<>();
+            for (Comment comment : commentList) {
+                CommentDto commentDto = new CommentDto();
+                BeanUtils.copyProperties(comment, commentDto);
+                commentDtos.add(commentDto);
+            }
+            return commentDtos;
+        }catch (Exception ex)
+        {
+            System.out.println(ex);
         }
-        return commentDtos;
+        return null;
+    }
+
+    public void commentNotifications(CommentDto commentDto)
+    {
+        try {
+            NotificationDto notificationDto = new NotificationDto();
+            notificationDto.setActivity("Commented");
+            notificationDto.setPostId(commentDto.getPostId());
+            notificationDto.setActivityUserId(commentDto.getUserId());
+            Post post = postService.getPostByPostId(commentDto.getPostId());
+            notificationDto.setUserIdOfPost(post.getUserId());
+            BaseResponse<UserDetailDto> user = commentService.getUserDetail(commentDto.getUserId());
+            UserDetailDto userDetailDto = user.getData();
+            BaseResponse<UserDetailDto> activityUser = commentService.getUserDetail(notificationDto.getActivityUserId());
+            UserDetailDto userDetailDto1 = activityUser.getData();
+            HashSet<String> userFriend = userDetailDto.getFriendIds();
+            HashSet<String> activityUserFriend = userDetailDto1.getFriendIds();
+            userFriend.addAll(activityUserFriend);
+            notificationDto.setListOfFriends(userFriend);
+            Producer producer = new Producer();
+            producer.kafkaProducer(notificationDto);
+        }catch (Exception ex)
+        {
+            System.out.println(ex);
+        }
+    }
+
+    public void sendPostActivities(CommentDto commentDto)
+    {
+        try {
+            PostActivityDTO postActivityDTO = new PostActivityDTO();
+            Post post = postService.getPostByPostId(commentDto.getPostId());
+            PostDTO postDTO = new PostDTO();
+            BeanUtils.copyProperties(post, postDTO);
+            postActivityDTO.setPostDTO(postDTO);
+            postActivityDTO.setUserFriendId(commentDto.getUserId());
+            postActivityDTO.setMessage("Commented");
+
+            commentService.sendUserActivity(postActivityDTO);
+        }catch(Exception ex)
+        {
+            System.out.println(ex);
+        }
     }
 }

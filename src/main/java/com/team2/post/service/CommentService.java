@@ -5,6 +5,7 @@ import com.team2.post.dto.PostActivityDTO;
 import com.team2.post.response.BaseResponse;
 import com.team2.post.dto.UserDetailDto;
 
+import java.util.Date;
 import java.util.List;
 
 public interface CommentService {
@@ -14,4 +15,6 @@ public interface CommentService {
     List<Comment> findByParentCommentId(String parentCommentId);
     BaseResponse<UserDetailDto> getUserDetail(String userId);
     void sendUserActivity(PostActivityDTO postActivityDTO);
+    Date getTimeStamp();
+
 }

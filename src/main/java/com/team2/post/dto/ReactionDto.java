@@ -1,10 +1,6 @@
 package com.team2.post.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import org.springframework.data.annotation.Id;
+import lombok.*;
 
 import java.util.Date;
 
@@ -15,9 +11,9 @@ import java.util.Date;
 @NoArgsConstructor
 public class ReactionDto {
 
-    @Id
     private String reactionId;
     private String userId;
+    @NonNull
     private String postId;
     private String activity;
     private Date timeStamp;

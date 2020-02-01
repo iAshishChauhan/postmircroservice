@@ -12,6 +12,7 @@ import com.team2.post.service.CommentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -54,5 +55,12 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public void sendUserActivity(PostActivityDTO postActivityDTO) {
         feedProxy.addPostAfterActivity(postActivityDTO);
+    }
+
+    @Override
+    public Date getTimeStamp() {
+        Date now = new Date();
+        Date timeStamp = new Date(now.getTime());
+        return timeStamp;
     }
 }

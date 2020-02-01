@@ -5,6 +5,7 @@ import com.team2.post.dto.PostDTO;
 import com.team2.post.dto.UserDetailDto;
 import com.team2.post.response.BaseResponse;
 
+import java.util.Date;
 import java.util.List;
 
 public interface PostService {
@@ -15,5 +16,6 @@ public interface PostService {
     Post getPostByPostId(String postId);
     List<Post> findPostByUserId(List<String> userId);
     BaseResponse<UserDetailDto> getUserDetails(String userId);
+    Date getTimeStamp();
 
 }
