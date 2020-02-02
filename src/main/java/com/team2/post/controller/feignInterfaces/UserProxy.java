@@ -13,7 +13,7 @@ public interface UserProxy
     @GetMapping("user/getUserDetails/{userId}")
     BaseResponse<UserDetailDto> getUserDetailsById(@PathVariable(value = "userId") String userId);
 
-    @GetMapping("/getBusinessUserDetails/{businessUserId}")
-    BaseResponse<BusinessDetailsDTO> getBusinessUserDetails(@PathVariable String businessUserId);
+    @GetMapping("user/getBusinessUserDetails/{businessUserId}")
+    BaseResponse<BusinessDetailsDTO> getBusinessUserDetails(@PathVariable("businessUserId") String adminId );
 
 }

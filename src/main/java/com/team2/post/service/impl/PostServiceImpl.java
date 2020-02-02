@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class PostServiceImpl implements PostService {
@@ -62,17 +63,21 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public List<Post> sortedPost() {
-        List<Post> PostList = postRepository.findAll();
-        PostList.sort(Comparator.comparing(Post::getTimestamp).reversed());
-        return PostList;
+        List<Post> postList = postRepository.findAll();
+        List<Post> sortedPost = postList.stream()
+                .sorted(Comparator.comparing(Post::getTimestamp))
+                .collect(Collectors.toList());
+        return sortedPost;
     }
 
 
     @Override
     public List<BusinessPost> sortedBusinessPost() {
         List<BusinessPost> businessPostList = businessPostRepository.findAll();
-        businessPostList.sort(Comparator.comparing(BusinessPost::getTimestamp).reversed());
-        return businessPostList;
+        List<BusinessPost> sortedBusinessPost = businessPostList.stream()
+                .sorted(Comparator.comparing(BusinessPost::getTimestamp))
+                .collect(Collectors.toList());
+        return sortedBusinessPost;
     }
 
     @Override

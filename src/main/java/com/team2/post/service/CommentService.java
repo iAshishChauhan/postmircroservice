@@ -12,7 +12,7 @@ public interface CommentService {
     String saveComment(Comment comment);
     List<Comment> findByPostId(String postId);
     List<Comment> findByUserId(String userId);
-    List<Comment> findByAdminId(String adminId);
+//    List<Comment> findByAdminId(String adminId);
     List<Comment> findByParentCommentId(String parentCommentId);
     BaseResponse<UserDetailDto> getUserDetail(String userId);
     void sendUserActivity(PostActivityDTO postActivityDTO);

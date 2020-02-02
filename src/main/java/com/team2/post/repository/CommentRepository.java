@@ -11,5 +11,5 @@ public interface CommentRepository extends MongoRepository<Comment, String> {
     List<Comment> findByPostId(String postId);
     List<Comment> findByParentCommentId(String parentCommentId);
     List<Comment> findByUserId(String userId);
-    List<Comment> findByAdminId(String adminId);
+//    List<Comment> findByAdminId(String adminId);
 }

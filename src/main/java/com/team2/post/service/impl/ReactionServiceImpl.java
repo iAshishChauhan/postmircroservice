@@ -48,7 +48,7 @@ public class ReactionServiceImpl implements ReactionService {
     @Override
     public List<Reaction> getReactionByAdminId(String adminId)
     {
-        return reactionRepository.findAllByAdminId(adminId);
+        return reactionRepository.findAllByUserId(adminId);
     }
 
     @Override

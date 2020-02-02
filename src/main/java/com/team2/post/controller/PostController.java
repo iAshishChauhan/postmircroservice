@@ -167,7 +167,7 @@ public class PostController {
             Set<BusinessPostDTO> businessPostDTOs = new HashSet<>();
             List<BusinessPostTimelineDTO> businessPostTimelineDTOs = new ArrayList<>();
             List<BusinessPost> businessPosts = postService.showBusinessPostByAdminId(adminId);
-            List<Comment> comments = commentService.findByAdminId(adminId);
+            List<Comment> comments = commentService.findByUserId(adminId);
             List<Reaction> reactions = reactionService.getReactionByAdminId(adminId);
 
 
