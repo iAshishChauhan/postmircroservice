@@ -36,7 +36,7 @@ public class CommentController {
             BeanUtils.copyProperties(commentDto, comment);
             String response = commentService.saveComment(comment);
             //commentNotifications(commentDto);
-            //sendPostActivities(commentDto);
+            sendPostActivities(commentDto);
 
             return new BaseResponse<>("null", true, response, HttpStatus.CREATED);
         } catch (Exception ex) {
@@ -67,7 +67,7 @@ public class CommentController {
                 commentDataDto.setCommentId(comment.getCommentId());
                 commentDataDto.setText(comment.getText());
 
-                if (comment.getParentCommentId() == null) {
+                if (comment.getParentCommentId().equals("null")) {
                     commentDataDto.setParentCommentId(comment.getParentCommentId());
                     commentDataDtos.add(commentDataDto);
                 } else {

@@ -41,7 +41,7 @@ public class ReactionController {
 
             BeanUtils.copyProperties(reactionDto, reaction);
             reactionService.addPostActivity(reaction);
-            //sendPostActivities(reactionDto);
+            sendPostActivities(reactionDto);
             //reactionNotifications(reactionDto);
 
 

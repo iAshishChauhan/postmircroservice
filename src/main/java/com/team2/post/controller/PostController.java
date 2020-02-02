@@ -37,10 +37,12 @@ public class PostController {
         {
             Post post = new Post();
             postDTO.setTimestamp(postService.getTimeStamp());
+
             BeanUtils.copyProperties(postDTO, post);
             postService.addPost(post);
+            BeanUtils.copyProperties(post, postDTO);
             //postNotification(postDTO);
-            //sendPostActivities(postDTO);
+            sendPostActivities(postDTO);
             return new BaseResponse<>("null", true, "PostAdded", HttpStatus.CREATED);
         }
         catch (Exception ex)
