@@ -2,13 +2,12 @@ package com.team2.post.controller;
 import com.team2.post.collection.Comment;
 import com.team2.post.collection.Post;
 import com.team2.post.collection.Reaction;
-import com.team2.post.dto.PostDTO;
-import com.team2.post.dto.PostTimelineDto;
-import com.team2.post.dto.UserDetailDto;
+import com.team2.post.dto.*;
 import com.team2.post.response.BaseResponse;
 import com.team2.post.service.CommentService;
 import com.team2.post.service.PostService;
 import com.team2.post.service.ReactionService;
+import com.team2.post.service.impl.Producer;
 import org.assertj.core.util.Lists;
 import org.assertj.core.util.Sets;
 import org.springframework.beans.BeanUtils;
@@ -34,15 +33,16 @@ public class PostController {
     @PostMapping("/addPost")
     public String addPost(@RequestBody PostDTO postDTO){
 
-        try {
+        try
+        {
             Post post = new Post();
-            Date now = new Date();
-            Date timeStamp = new Date(now.getTime());
-            postDTO.setTimestamp(timeStamp);
+            postDTO.setTimestamp(postService.getTimeStamp());
             BeanUtils.copyProperties(postDTO, post);
             postService.addPost(post);
+            //postNotification(postDTO);
             return post.getPostId();
-        }catch (Exception ex)
+        }
+        catch (Exception ex)
         {
             System.out.println(ex);
             ex.printStackTrace();
@@ -75,6 +75,8 @@ public class PostController {
             List<Post> posts = postService.showPostByUserId(userId);
             List<Comment> comments = commentService.findByUserId(userId);
             List<Reaction> reactions = reactionService.getReactionByUserId(userId);
+
+
             for (Post post : posts) {
                 PostDTO postDTO = new PostDTO();
                 BeanUtils.copyProperties(post, postDTO);
@@ -89,6 +91,7 @@ public class PostController {
                 postTimelineDto.setTimeStamp(postDTO.getTimestamp());
                 postTimelineDtos.add(postTimelineDto);
             }
+
             for (Comment comment : comments) {
                 PostDTO postDTO = new PostDTO();
                 BeanUtils.copyProperties(postService.getPostByPostId(comment.getPostId()), postDTO);
@@ -121,14 +124,14 @@ public class PostController {
             List<PostTimelineDto> postWithoutDuplicates = Lists.newArrayList(Sets.newHashSet(postTimelineDtos));
             postWithoutDuplicates.sort(Comparator.comparing(PostTimelineDto::getTimeStamp).reversed());
 
-            return new BaseResponse<>("null",true,postWithoutDuplicates,HttpStatus.CREATED);
-        }catch(Exception ex)
+            return new BaseResponse<>("null", true, postWithoutDuplicates, HttpStatus.CREATED);
+        }catch (Exception ex)
         {
             System.out.println(ex);
-            ex.printStackTrace();
         }
         return null;
     }
+
 
     @PostMapping("/getPostsByUserIds")
     public List<PostDTO> getPostsByUserIds(@RequestBody List<String> userId)
@@ -142,6 +145,20 @@ public class PostController {
             postDTOS.add(postDTO);
         }
         return postDTOS;
+    }
+
+    public void postNotification(PostDTO postDTO)
+    {
+        NotificationDto notificationDto = new NotificationDto();
+        notificationDto.setActivity("Posted");
+        notificationDto.setPostId(postDTO.getPostId());
+        notificationDto.setUserIdOfPost(postDTO.getUserId());
+        BaseResponse<UserDetailDto> user = postService.getUserDetails(postDTO.getUserId());
+        UserDetailDto userDetailDto = user.getData();
+        HashSet<String> userFriend = userDetailDto.getFriendIds();
+        notificationDto.setListOfFriends(userFriend);
+        Producer producer = new Producer();
+        producer.kafkaProducer(notificationDto);
     }
 
 

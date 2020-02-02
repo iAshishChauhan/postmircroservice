@@ -5,6 +5,7 @@ import com.team2.post.dto.PostActivityDTO;
 import com.team2.post.dto.UserDetailDto;
 import com.team2.post.response.BaseResponse;
 
+import java.util.Date;
 import java.util.List;
 
 public interface ReactionService {
@@ -18,6 +19,8 @@ public interface ReactionService {
     BaseResponse<UserDetailDto> getUserDetails(String userId);
 
     void sendUserActivity(PostActivityDTO postActivityDTO);
+
+    Date getTimeStamp();
 
 
 }
