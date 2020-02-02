@@ -1,6 +1,8 @@
 package com.team2.post.service.impl;
 import com.team2.post.collection.Post;
+import com.team2.post.controller.feignInterfaces.FeedProxy;
 import com.team2.post.controller.feignInterfaces.UserProxy;
+import com.team2.post.dto.PostActivityDTO;
 import com.team2.post.dto.UserDetailDto;
 import com.team2.post.repository.PostRepository;
 import com.team2.post.response.BaseResponse;
@@ -19,10 +21,13 @@ public class PostServiceImpl implements PostService {
     @Autowired
     UserProxy userProxy;
 
+    @Autowired
+    FeedProxy feedProxy;
+
     @Override
     public Post addPost(Post post)
     {
-        return postRepository.insert(post);
+        return postRepository.save(post);
     }
 
     @Override
@@ -66,5 +71,10 @@ public class PostServiceImpl implements PostService {
         Date now = new Date();
         Date timeStamp = new Date(now.getTime());
         return timeStamp;
+    }
+
+    @Override
+    public void sendUserActivity(PostActivityDTO postActivityDTO) {
+        feedProxy.addPostAfterActivity(postActivityDTO);
     }
 }

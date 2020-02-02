@@ -13,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @CrossOrigin(origins = "*", allowedHeaders = "*")
 @RestController
@@ -26,9 +27,8 @@ public class CommentController {
     PostService postService;
 
 
-
     @PostMapping("/addComment")
-    public BaseResponse<String> addComment(@RequestBody CommentDto commentDto){
+    public BaseResponse<String> addComment(@RequestBody CommentDto commentDto) {
 
         try {
             commentDto.setTimeStamp(commentService.getTimeStamp());
@@ -36,11 +36,10 @@ public class CommentController {
             BeanUtils.copyProperties(commentDto, comment);
             String response = commentService.saveComment(comment);
             //commentNotifications(commentDto);
-            sendPostActivities(commentDto);
+            //sendPostActivities(commentDto);
 
             return new BaseResponse<>("null", true, response, HttpStatus.CREATED);
-        }catch (Exception ex)
-        {
+        } catch (Exception ex) {
             System.out.println(ex);
         }
         return null;
@@ -52,9 +51,11 @@ public class CommentController {
         try {
             List<CommentDataDto> commentDataDtos = new ArrayList<CommentDataDto>();
             List<Comment> commentList = commentService.findByPostId(postId);
-            commentList.sort(Comparator.comparing(Comment::getTimeStamp));
+            List<Comment> sortedComment = commentList.stream()
+                    .sorted(Comparator.comparing(Comment::getTimeStamp))
+                    .collect(Collectors.toList());
 
-            for (Comment comment : commentList) {
+            for (Comment comment : sortedComment) {
                 CommentDataDto commentDataDto = new CommentDataDto();
                 BaseResponse<UserDetailDto> user = commentService.getUserDetail(comment.getUserId());
                 UserDetailDto userDetailDto = user.getData();
@@ -72,16 +73,21 @@ public class CommentController {
                 } else {
                     for (CommentDataDto existingComment : commentDataDtos) {
                         if (existingComment.getCommentId().equals(comment.getParentCommentId())) {
-                            List<CommentDataDto> appendChildComment = existingComment.getChildComment();
-                            appendChildComment.add(commentDataDto);
-                            existingComment.setChildComment(appendChildComment);
+                            List<CommentDataDto> appendChildComment = new ArrayList<>();
+                            if (existingComment.getChildComment() == null) {
+                                appendChildComment.add(commentDataDto);
+                                existingComment.setChildComment(appendChildComment);
+                            } else {
+                                appendChildComment = existingComment.getChildComment();
+                                appendChildComment.add(commentDataDto);
+                                existingComment.setChildComment(appendChildComment);
+                            }
                         }
                     }
                 }
             }
             return new BaseResponse<>("null", true, commentDataDtos, HttpStatus.CREATED);
-        }catch (Exception ex)
-        {
+        } catch (Exception ex) {
             System.out.println(ex);
         }
         return null;
@@ -98,15 +104,42 @@ public class CommentController {
                 commentDtos.add(commentDto);
             }
             return commentDtos;
-        }catch (Exception ex)
-        {
+        } catch (Exception ex) {
             System.out.println(ex);
         }
         return null;
     }
 
-    public void commentNotifications(CommentDto commentDto)
-    {
+    @GetMapping(value = "/viewCommentByParentId/{parentCommentId}")
+    public BaseResponse<List<CommentDataDto>> getCommentByParentId(@PathVariable("parentCommentId") String parentCommentId) {
+
+        List<CommentDataDto> commentDataDtos = new ArrayList<CommentDataDto>();
+        List<Comment> commentList = commentService.findByPostId(parentCommentId);
+        List<Comment> sortedComment = commentList.stream()
+                .sorted(Comparator.comparing(Comment::getTimeStamp))
+                .collect(Collectors.toList());
+
+        for (Comment comment : sortedComment) {
+            CommentDataDto commentDataDto = new CommentDataDto();
+            BaseResponse<UserDetailDto> user = commentService.getUserDetail(comment.getUserId());
+            UserDetailDto userDetailDto = user.getData();
+
+            commentDataDto.setPostId(comment.getPostId());
+            commentDataDto.setImageUrl(userDetailDto.getImageUrl());
+            commentDataDto.setUserName(userDetailDto.getUserName());
+            commentDataDto.setTimeStamp(comment.getTimeStamp());
+            commentDataDto.setCommentId(comment.getCommentId());
+            commentDataDto.setText(comment.getText());
+            commentDataDto.setParentCommentId(comment.getParentCommentId());
+            commentDataDto.setChildComment(null);
+
+            commentDataDtos.add(commentDataDto);
+        }
+
+        return new BaseResponse<>("null", true, commentDataDtos, HttpStatus.CREATED);
+
+    }
+    public void commentNotifications(CommentDto commentDto) {
         try {
             NotificationDto notificationDto = new NotificationDto();
             notificationDto.setActivity("Commented");
@@ -124,14 +157,12 @@ public class CommentController {
             notificationDto.setListOfFriends(userFriend);
             Producer producer = new Producer();
             producer.kafkaProducer(notificationDto);
-        }catch (Exception ex)
-        {
+        } catch (Exception ex) {
             System.out.println(ex);
         }
     }
 
-    public void sendPostActivities(CommentDto commentDto)
-    {
+    public void sendPostActivities(CommentDto commentDto) {
         try {
             PostActivityDTO postActivityDTO = new PostActivityDTO();
             Post post = postService.getPostByPostId(commentDto.getPostId());
@@ -142,8 +173,7 @@ public class CommentController {
             postActivityDTO.setMessage("Commented");
 
             commentService.sendUserActivity(postActivityDTO);
-        }catch(Exception ex)
-        {
+        } catch (Exception ex) {
             System.out.println(ex);
         }
     }

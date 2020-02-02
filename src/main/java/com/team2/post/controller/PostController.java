@@ -31,7 +31,7 @@ public class PostController {
     CommentService commentService;
 
     @PostMapping("/addPost")
-    public String addPost(@RequestBody PostDTO postDTO){
+    public BaseResponse<String> addPost(@RequestBody PostDTO postDTO){
 
         try
         {
@@ -40,7 +40,8 @@ public class PostController {
             BeanUtils.copyProperties(postDTO, post);
             postService.addPost(post);
             //postNotification(postDTO);
-            return post.getPostId();
+            //sendPostActivities(postDTO);
+            return new BaseResponse<>("null", true, "PostAdded", HttpStatus.CREATED);
         }
         catch (Exception ex)
         {
@@ -159,6 +160,16 @@ public class PostController {
         notificationDto.setListOfFriends(userFriend);
         Producer producer = new Producer();
         producer.kafkaProducer(notificationDto);
+    }
+
+    public void sendPostActivities(PostDTO postDTO)
+    {
+        PostActivityDTO postActivityDTO = new PostActivityDTO();
+        postActivityDTO.setPostDTO(postDTO);
+        postActivityDTO.setUserFriendId("empty");
+        postActivityDTO.setMessage("Posted");
+
+        postService.sendUserActivity(postActivityDTO);
     }
 
 

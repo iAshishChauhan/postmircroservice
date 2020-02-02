@@ -36,6 +36,7 @@ public class Post {
     private String category;
     private String userId;
     private Content content;
+    private int likeCount;
     private Date timestamp;
 }
 
