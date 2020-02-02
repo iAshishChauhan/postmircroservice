@@ -1,4 +1,5 @@
 package com.team2.post.controller;
+import com.team2.post.collection.BusinessPost;
 import com.team2.post.collection.Comment;
 import com.team2.post.collection.Post;
 import com.team2.post.collection.Reaction;
@@ -30,6 +31,21 @@ public class PostController {
     @Autowired
     CommentService commentService;
 
+    @PostMapping("/addBusinessPost")
+    public String addPost(@RequestBody BusinessPostDTO businessPostDTO) {
+        try {
+            BusinessPost businessPost = new BusinessPost();
+            businessPostDTO.setTimestamp(postService.getTimeStamp());
+            BeanUtils.copyProperties(businessPostDTO, businessPost);
+            postService.addBusinessPost(businessPost);
+            return businessPost.getPostId();
+        } catch (Exception ex) {
+            System.out.println(ex);
+            ex.printStackTrace();
+        }
+        return null;
+    }
+
     @PostMapping("/addPost")
     public BaseResponse<String> addPost(@RequestBody PostDTO postDTO){
 
@@ -58,9 +74,21 @@ public class PostController {
         return postService.showPostByUserId(userId);
     }
 
+    @GetMapping("/getByAdminId/{adminId}")
+    public List<BusinessPost> postByAdminId(@PathVariable("adminId") String adminId) {
+        return postService.showBusinessPostByAdminId(adminId);
+    }
+
+
+
     @GetMapping("/getUserIdByPostId/{postId}")
     public String userIdByPostId(@PathVariable("postId")String postId){
         return postService.getUserIdByPostId(postId);
+    }
+
+    @GetMapping("/getAdminIdByPostId/{postId}")
+    public String adminIdByPostId(@PathVariable("postId") String postId) {
+        return postService.getAdminIdByPostId(postId);
     }
 
     @GetMapping("/getSortedPosts")
@@ -135,6 +163,65 @@ public class PostController {
         return null;
     }
 
+    @GetMapping("/admin/timeline/{adminId}")
+    public BaseResponse<List<BusinessPostTimelineDTO>> getAdminsAllPost(@PathVariable("adminId") String adminId) {
+        try {
+            Set<BusinessPostDTO> businessPostDTOs = new HashSet<>();
+            List<BusinessPostTimelineDTO> businessPostTimelineDTOs = new ArrayList<>();
+            List<BusinessPost> businessPosts = postService.showBusinessPostByAdminId(adminId);
+            List<Comment> comments = commentService.findByUserId(adminId);
+            List<Reaction> reactions = reactionService.getReactionByUserId(adminId);
+            for (BusinessPost businessPost : businessPosts) {
+                BusinessPostDTO businessPostDTO = new BusinessPostDTO();
+                BeanUtils.copyProperties(businessPost, businessPostDTO);
+                BaseResponse<BusinessDetailsDTO> business = postService.getBusinessUserDetails(businessPost.getAdminId());
+                BusinessDetailsDTO businessDetailsDTO = business.getData();
+                BusinessPostTimelineDTO businessPostTimelineDTO = new BusinessPostTimelineDTO();
+                businessPostTimelineDTO.setPostId(businessPost.getPostId());
+                businessPostTimelineDTO.setBusinessName(businessDetailsDTO.getBusinessName());
+                businessPostTimelineDTO.setBusinessImageUrl(businessDetailsDTO.getBusinessImageUrl());
+                businessPostTimelineDTO.setMessage("Posted");
+                businessPostTimelineDTO.setBusinessPostDTO(businessPostDTO);
+                businessPostTimelineDTO.setTimeStamp(businessPost.getTimestamp());
+                businessPostTimelineDTOs.add(businessPostTimelineDTO);
+            }
+            for (Comment comment : comments) {
+                BusinessPostDTO businessPostDTO = new BusinessPostDTO();
+                BeanUtils.copyProperties(postService.getBusinessPostByPostId(comment.getPostId()), businessPostDTO);
+                BaseResponse<BusinessDetailsDTO> business = postService.getBusinessUserDetails(comment.getUserId());
+                BusinessDetailsDTO businessDetailsDTO = business.getData();
+                BusinessPostTimelineDTO businessPostTimelineDTO = new BusinessPostTimelineDTO();
+                businessPostTimelineDTO.setPostId(businessPostDTO.getPostId());
+                businessPostTimelineDTO.setBusinessName(businessDetailsDTO.getBusinessName());
+                businessPostTimelineDTO.setBusinessImageUrl(businessDetailsDTO.getBusinessImageUrl());
+                businessPostTimelineDTO.setMessage("Commented");
+                businessPostTimelineDTO.setBusinessPostDTO(businessPostDTO);
+                businessPostTimelineDTO.setTimeStamp(comment.getTimeStamp());
+                businessPostTimelineDTOs.add(businessPostTimelineDTO);
+            }
+            for (Reaction reaction : reactions) {
+                BusinessPostDTO businessPostDTO = new BusinessPostDTO();
+                BeanUtils.copyProperties(postService.getBusinessPostByPostId(reaction.getPostId()), businessPostDTO);
+                BaseResponse<BusinessDetailsDTO> business = postService.getBusinessUserDetails(reaction.getUserId());
+                BusinessDetailsDTO businessDetailsDTO = business.getData();
+                BusinessPostTimelineDTO businessPostTimelineDTO = new BusinessPostTimelineDTO();
+                businessPostTimelineDTO.setPostId(businessPostDTO.getPostId());
+                businessPostTimelineDTO.setBusinessName(businessDetailsDTO.getBusinessName());
+                businessPostTimelineDTO.setBusinessImageUrl(businessDetailsDTO.getBusinessImageUrl());
+                businessPostTimelineDTO.setMessage(reaction.getActivity());
+                businessPostTimelineDTO.setBusinessPostDTO(businessPostDTO);
+                businessPostTimelineDTO.setTimeStamp(reaction.getTimeStamp());
+                businessPostTimelineDTOs.add(businessPostTimelineDTO);
+            }
+            List<BusinessPostTimelineDTO> businessPostWithoutDuplicates = Lists.newArrayList(Sets.newHashSet(businessPostTimelineDTOs));
+            businessPostWithoutDuplicates.sort(Comparator.comparing(BusinessPostTimelineDTO::getTimeStamp).reversed());
+            return new BaseResponse<>("null", true, businessPostWithoutDuplicates, HttpStatus.CREATED);
+        } catch (Exception ex) {
+            System.out.println(ex);
+        }
+        return null;
+    }
+
 
     @PostMapping("/getPostsByUserIds")
     public List<PostDTO> getPostsByUserIds(@RequestBody List<String> userId)
@@ -150,6 +237,18 @@ public class PostController {
         return postDTOS;
     }
 
+    @PostMapping("/getPostsByAdminIds")
+    public List<BusinessPostDTO> getPostsByAdminIds(@RequestBody List<String> adminId) {
+        List<BusinessPost> businessPosts = postService.findBusinessPostByAdminId(adminId);
+        List<BusinessPostDTO> businessPostDTOS = new ArrayList<>();
+        for (BusinessPost businessPost : businessPosts) {
+            BusinessPostDTO businessPostDTO = new BusinessPostDTO();
+            BeanUtils.copyProperties(businessPost, businessPostDTO);
+            businessPostDTOS.add(businessPostDTO);
+        }
+        return businessPostDTOS;
+    }
+
     public void postNotification(PostDTO postDTO)
     {
         NotificationDto notificationDto = new NotificationDto();
@@ -160,6 +259,15 @@ public class PostController {
         UserDetailDto userDetailDto = user.getData();
         HashSet<String> userFriend = userDetailDto.getFriendIds();
         notificationDto.setListOfFriends(userFriend);
+        Producer producer = new Producer();
+        producer.kafkaProducer(notificationDto);
+    }
+
+    public void postNotification(BusinessPostDTO businessPostDTO) {
+        NotificationDto notificationDto = new NotificationDto();
+        notificationDto.setActivity("Posted");
+        notificationDto.setPostId(businessPostDTO.getPostId());
+        notificationDto.setUserIdOfPost(businessPostDTO.getAdminId());
         Producer producer = new Producer();
         producer.kafkaProducer(notificationDto);
     }
