@@ -46,6 +46,12 @@ public class ReactionServiceImpl implements ReactionService {
     }
 
     @Override
+    public List<Reaction> getReactionByAdminId(String adminId)
+    {
+        return reactionRepository.findAllByAdminId(adminId);
+    }
+
+    @Override
     public BaseResponse<UserDetailDto> getUserDetails(String userId)
     {
       return userProxy.getUserDetailsById(userId);

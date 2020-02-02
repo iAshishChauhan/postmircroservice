@@ -1,5 +1,6 @@
 package com.team2.post.controller.feignInterfaces;
 
+import com.team2.post.dto.BusinessDetailsDTO;
 import com.team2.post.dto.UserDetailDto;
 import com.team2.post.response.BaseResponse;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -11,5 +12,8 @@ public interface UserProxy
 {
     @GetMapping("user/getUserDetails/{userId}")
     BaseResponse<UserDetailDto> getUserDetailsById(@PathVariable(value = "userId") String userId);
+
+    @GetMapping("/getBusinessUserDetails/{businessUserId}")
+    BaseResponse<BusinessDetailsDTO> getBusinessUserDetails(@PathVariable String businessUserId);
 
 }

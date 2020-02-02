@@ -16,6 +16,8 @@ public interface ReactionService {
 
     List<Reaction> getReactionByUserId(String userId);
 
+    List<Reaction> getReactionByAdminId(String adminId);
+
     BaseResponse<UserDetailDto> getUserDetails(String userId);
 
     void sendUserActivity(PostActivityDTO postActivityDTO);

@@ -48,6 +48,11 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
+    public List<Comment> findByAdminId(String adminId) {
+        return commentRepository.findByAdminId(adminId);
+    }
+
+    @Override
     public List<Comment> findByParentCommentId(String parentCommentId) {
         return commentRepository.findByParentCommentId(parentCommentId);
     }

@@ -12,4 +12,6 @@ public interface ReactionRepository extends MongoRepository<Reaction,String>
     List<Reaction> findAllByPostId(String postId);
 
     List<Reaction> findAllByUserId(String userId);
+
+    List<Reaction> findAllByAdminId(String adminId);
 }

@@ -10,13 +10,14 @@ import java.util.Date;
 
 @Getter
 @Setter
-@NoArgsConstructor
 @AllArgsConstructor
-public class PostDTO {
+@NoArgsConstructor
+public class BusinessPostDTO {
     private String  postId;
     private String category;
-    private String userId;
+    private String adminId;
     private Content content;
     private Date timestamp;
     private int likeCount;
+
 }

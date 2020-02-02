@@ -32,10 +32,16 @@ public class ReactionController {
     {
             Reaction reaction = new Reaction();
             reactionDto.setTimeStamp(reactionService.getTimeStamp());
+
+            Post post=postService.getPostByPostId(reactionDto.getPostId());
+            int count=post.getLikeCount();
+            count++;
+            post.setLikeCount(count);
+            postService.addPost(post);
+
             BeanUtils.copyProperties(reactionDto, reaction);
             reactionService.addPostActivity(reaction);
             sendPostActivities(reactionDto);
-            //reactionNotifications(reactionDto);
 
 
             return new BaseResponse<>("null", true, "Reaction Added", HttpStatus.CREATED);
